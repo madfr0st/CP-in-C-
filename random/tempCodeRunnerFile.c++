@@ -1,0 +1,1 @@
+cout << minLeft[i][j] << " ";
