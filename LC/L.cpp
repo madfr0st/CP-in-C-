@@ -20,31 +20,6 @@ class Solution {
     public:
         int maxVowels(string s, int k) {
             
-            set<char> vowels;
-
-            vowels.insert('a');
-            vowels.insert('e');
-            vowels.insert('i');
-            vowels.insert('o');
-            vowels.insert('u');
-
-
-            
-            int max = 0;
-            int size = s.size();
-            int l = 0;
-            int r = 0;
-
-            int R = min(k,size);
-
-         
-            for(int i=0;i<R;i++){
-
-            }
-            for(int i=0;i<size;++i){
-                
-            }
-
 
             return 0;
         }
@@ -53,10 +28,6 @@ class Solution {
     
 int main() {
 
-    string s = "abciiidef";
-    int k = 3;
-    Solution sol;
-    sol.maxVowels(s,  k);
 
     return 0;
 }
