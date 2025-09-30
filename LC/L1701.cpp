@@ -24,6 +24,8 @@
 #include <utility>
 #include <vector>
 
+#include <bits/stdc++.h>
+
 
 #define ll long long
 #define all(c) c.begin(), c.end()
@@ -35,16 +37,24 @@ using namespace std;
 
 class Solution {
     public:
-        int maxVowels(string s, int k) {
-            
+        vector<int> findClosestElements(vector<int>& arr, int k, int x) {
 
-            return 0;
+
+
         }
     };
 
     
 int main() {
 
+    vector<int> customers = {1,2,3,4,5,6,7};
+    Solution s;
+    float ans = s.findClosestElements(customers);
+    cout << ans << endl;
+
 
     return 0;
 }
+
+
+
