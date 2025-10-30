@@ -55,8 +55,9 @@ int main() {
 
     string s = "abciiidef";
     int k = 3;
+    cin >> k ;
     Solution sol;
     sol.maxVowels(s,  k);
-
+    cout <<  "test" << k << endl;
     return 0;
 }
