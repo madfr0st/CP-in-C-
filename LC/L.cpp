@@ -6,8 +6,6 @@ using namespace std;
 class Solution {
     public:
         int maxVowels(string s, int k) {
-            
-
             return 0;
         }
     };
@@ -22,6 +20,8 @@ int main() {
     cout<<p<<endl;
     cout<<k<<endl;
     cout<<&p<<endl;
+
+
 
     return 0;
 }

@@ -62,7 +62,7 @@ int main() {
     vector<int> target = {6,4,8,1,3,2};
     vector<int> arr = {4,7,6,2,3,8,6,1};
 
-    cout << solution.minOperations(target, arr)<< " ";
+    cout << solution.minOperations(target, arr)<< "\n";
 
     return 0;
 }
