@@ -1,58 +1,99 @@
-// C++ program to illustrate the
-// iterators in vector
-#include <bits/stdc++.h>
-#include <mutex>
-
+#include <iostream>
+#include <queue>
+#include <thread>
+#include <functional>
+#include <condition_variable>
+#include <vector>
+#include <atomic>
 using namespace std;
 
+template<typename T>
+class BoundedQueue {
+    mutex m;
+    bool active = true;
+    size_t size;
+    queue<T> queue;
+    condition_variable is_full, is_empty;
 
-// int counter = 0;
-mutex mx_1,mx_2,mx_3;
+    function<bool()> func_1 = [this]() -> bool {
+        return queue.size() < size || !active;
+    };
 
-// void f() {
-//     lock_guard<mutex> lock(mx);
-//     counter++;
-//     cout << counter << endl;
-// }
+    function<bool()> func_2 = [this]() -> bool {
+        return !queue.empty() || !active;
+    };
 
-atomic<int> counter(0);
-condition_variable cond_1;
+public:
+    BoundedQueue(size_t n) : size(n) {};
 
+    void close() {
+        lock_guard<mutex> lock(m);
+        active = false;
+        is_full.notify_all();
+        is_empty.notify_all();
+    }
 
+    bool push(T data) {
+        unique_lock<mutex> lock(m);
+        is_full.wait(lock, func_1);
+        if (!active) return false;
+        queue.emplace(move(data));
+        is_empty.notify_all();
+        return true;
+    }
+
+    bool pop(T &data) {
+        unique_lock<mutex> lock(m);
+        is_empty.wait(lock, func_2);
+        if (!active) return false;
+        data = move(queue.front());
+        queue.pop();
+        is_full.notify_all();
+        return true;
+    }
+};
 
 int main() {
+    BoundedQueue<pair<int, int>> queue(4);
 
-    unique_lock<mutex> ul(mx_1);
-
-
-    cond_1.wait(ul,true);
-
-
-
-    function<void()> f = []() -> void {
-        // lock_guard<mutex> lock(mx_1, adopt_lock);
-        for (int i=0;i<10;i++) {
-            counter++;
-            cout << counter << endl;
+    auto producer = [&queue](int a, int b) -> void {
+        for (int i = a; i < b; i++) {
+            pair<int, int> pair(i, b);
+            queue.push(pair);
+            cout << "Produced data: " << pair.first << " , " << pair.second << endl;
+            this_thread::sleep_for(100ms);
         }
     };
 
-    // mx_1.lock();
+    auto consumer = [&queue]() -> void {
+        pair<int, int> pair;
+        while (queue.pop(pair)) {
+            cout << "Consumed data: " << pair.first << " , " << pair.second << endl;
+        }
+        cout << "Queue is no longer active" << endl;
+    };
 
-    cout << counter << endl;
-    thread t_1(f);
-    thread t_2(f);
+    vector<thread> v_producers;
+    vector<thread> v_consumers;
 
-    t_1.join();
-    t_2.join();
+    for (int i = 0; i < 10; i++) {
+        v_producers.emplace_back(producer, i, 10);
+    }
 
-    cout << counter << endl;
+    for (int i = 0; i < 4; i++) {
+        v_consumers.emplace_back(consumer);
+    }
 
+    for (auto& t : v_producers) {
+        t.join();
+    }
 
+    queue.close();
 
-    // t_1.join();
-    // t_2.join();
+    for (auto& t : v_consumers) {
+        t.join();
+    }
 
+    cout << "Task ended" << endl;
     return 0;
-
 }
