@@ -27,6 +27,7 @@ public:
     BoundedQueue(size_t n) : size(n) {};
 
     void close() {
+
         lock_guard<mutex> lock(m);
         active = false;
         is_full.notify_all();
